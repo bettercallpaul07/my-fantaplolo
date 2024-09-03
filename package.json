@@ -10,17 +10,23 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "chart.js": "^4.4.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.438.0",
     "nuxt": "^3.13.0",
-    "pap": "^0.6.3",
+    "pap": "^0.3.0",
     "papaparse": "^5.4.1",
     "radix-vue": "^1.9.5",
     "shadcn-nuxt": "^0.10.4",
+    "sweetalert2": "^11.13.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "vue": "latest"
+    "vue": "latest",
+    "vue-chartjs": "^5.3.1"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",

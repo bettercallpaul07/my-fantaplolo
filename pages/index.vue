@@ -1,108 +1,96 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 p-4 flex flex-col">
-        <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 mb-6 w-full md:w-2/3 lg:w-1/2">
-            <input v-model="searchQuery" type="text" placeholder="Cerca una squadra o un giocatore..."
-                class="w-full p-4 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500" />
-        </div>
-        <div class="flex-grow overflow-auto flex justify-center items-center">
-            <transition name="fade" mode="out-in">
-                <div v-if="isSearching" class="flex items-center justify-center">
-                    <svg class="animate-spin h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                        </circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z">
-                        </path>
-                    </svg>
-                </div>
-                <div v-else-if="searchQuery.length >= 3 && filteredData.length" class="w-full overflow-x-auto">
-                    <table class="min-w-full bg-white shadow-lg rounded-lg">
-                        <thead>
-                            <tr>
-                                <th
-                                    class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-medium text-gray-700 uppercase tracking-wider sticky left-0 bg-white z-10">
-                                    Campo
-                                </th>
-                                <th v-for="(row, rowIndex) in filteredData" :key="rowIndex"
-                                    class="py-2 px-4 border-b border-gray-200 bg-gray-100 text-left text-sm font-medium text-gray-700 uppercase tracking-wider">
-                                    {{ rowIndex + 1 }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(header, index) in csvHeaders" :key="index" class="hover:bg-gray-50">
-                                <td
-                                    class="py-2 px-4 border-b border-gray-200 font-medium text-gray-900 sticky left-0 bg-white z-10">
-                                    {{ header }}</td>
-                                <td v-for="(row, rowIndex) in filteredData" :key="rowIndex"
-                                    class="py-2 px-4 border-b border-gray-200 text-gray-900">
-                                    {{ row[index] }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </transition>
-        </div>
+    <div class="container mx-auto p-4">
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+        <h2 class="text-4xl font-bold">{{ fantamilioniDisponibili }}</h2>
+        <p class="text-lg">Fantamilioni disponibili</p>
+      </div>
+  
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+        <h2 class="text-4xl font-bold">{{ giocatoriDisponibili }}</h2>
+        <p class="text-lg">Giocatori disponibili</p>
+      </div>
+  
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+        <h2 class="text-4xl font-bold">{{ giocatoriDiRuolo }}</h2>
+        <p class="text-lg">Giocatori di ruolo</p>
+      </div>
+  
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+        <h2 class="text-4xl font-bold">{{ portieri }}</h2>
+        <p class="text-lg">Portieri</p>
+      </div>
+  
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+        <h2 class="text-4xl font-bold">{{ fantamilioniSpesi }}</h2>
+        <p class="text-lg">Fantamilioni spesi</p>
+      </div>
+  
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
+        <h2 class="text-2xl font-bold mb-4">Ultimi 5 giocatori acquistati</h2>
+        <ul class="list-disc list-inside">
+          <li v-for="(player, index) in recentPlayers" :key="index" class="text-lg">
+            {{ player.player[0] }} ({{ player.player[1] }}) - {{ player.player[2] }} - {{ player.cost }} Fantamilioni
+          </li>
+        </ul>
+      </div>
     </div>
-</template>
-
-<script setup>
-import { ref, onMounted, computed, watch } from 'vue'
-import Papa from 'papaparse'
-
-const searchQuery = ref('')
-const isSearching = ref(false)
-const csvData = ref([])
-const csvHeaders = ref([])
-
-const loadCSV = () => {
-    const filePath = './csv/Quot.csv' // Modifica il percorso del file CSV
-    fetch(filePath)
-        .then(response => response.text())
-        .then(data => {
-            Papa.parse(data, {
-                complete: (results) => {
-                    csvHeaders.value = results.data[0]
-                    csvData.value = results.data.slice(1)
-                },
-                header: false
-            })
-        })
-}
-
-const filteredData = computed(() => {
-    if (searchQuery.value.length < 3) return []
-    return csvData.value.filter(row =>
-        row.some(cell => cell.toString().toLowerCase().includes(searchQuery.value.toLowerCase()))
-    )
-})
-
-watch(searchQuery, (newQuery) => {
-    if (newQuery.length >= 3) {
-        isSearching.value = true
-        setTimeout(() => {
-            isSearching.value = false
-        }, 1500) // Durata dell'animazione aumentata
+  </template>
+  
+  <script setup>
+  import { ref, onMounted } from 'vue'
+  
+  const fantamilioniDisponibili = ref(500)
+  const giocatoriDisponibili = ref(28)
+  const giocatoriDiRuolo = ref(25)
+  const portieri = ref(3)
+  const fantamilioniSpesi = ref(0)
+  const recentPlayers = ref([])
+  
+  onMounted(() => {
+    const storedPlayers = JSON.parse(localStorage.getItem('selectedPlayers')) || []
+    recentPlayers.value = storedPlayers.slice(-5).reverse()
+    updateCounts(storedPlayers)
+  })
+  
+  const updateCounts = (players) => {
+    const totalCost = players.reduce((sum, player) => sum + Number(player.cost), 0)
+    fantamilioniSpesi.value = Math.min(totalCost, 999) // Assicurati che sia un numero a tre cifre
+    fantamilioniDisponibili.value = 500 - fantamilioniSpesi.value
+    giocatoriDisponibili.value = 28 - players.length
+    portieri.value = 3 - players.filter(player => player.player[1] === 'POR').length
+    giocatoriDiRuolo.value = 25 - players.filter(player => player.player[1] !== 'POR').length
+  }
+  </script>
+  
+  <style scoped>
+  .container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      grid-template-columns: repeat(2, 1fr);
     }
-})
-
-onMounted(() => {
-    loadCSV()
-})
-</script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s;
-}
-
-.fade-enter,
-.fade-leave-to
-
-/* .fade-leave-active in <2.1.8 */
-    {
-    opacity: 0;
-}
-</style>
+  }
+  
+  .card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .list-disc {
+    list-style-type: disc;
+  }
+  
+  .list-inside {
+    list-style-position: inside;
+  }
+  </style>
