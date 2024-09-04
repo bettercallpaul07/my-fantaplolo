@@ -161,7 +161,7 @@ const addPlayer = async (player) => {
 
       
       // Decrementa il numero di portieri se l'RM del giocatore è "POR"
-      if (player[4] === 'POR') {
+      if (player[4] === 'Por') {
         const portieri = JSON.parse(localStorage.getItem('portieri')) || 3
         localStorage.setItem('portieri', portieri - 1)
       }
