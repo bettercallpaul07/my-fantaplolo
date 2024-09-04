@@ -20,6 +20,12 @@
             <span class="text-xs mt-1">Team</span>
           </nuxt-link>
         </li>
+        <li>
+          <nuxt-link to="/obiettivi" class="flex flex-col items-center">
+            <font-awesome-icon icon="star" size="2x" />
+            <span class="text-xs mt-1">Pref</span>
+          </nuxt-link>
+        </li>
       </ul>
     </nav>
     <div class="flex-1 p-4">
