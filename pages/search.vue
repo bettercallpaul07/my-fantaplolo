@@ -21,8 +21,8 @@
               </div>
             </div>
           </div>
-          <button @click="addPlayer(player)" class="add-button">
-            <font-awesome-icon icon="plus" /> Aggiungi
+          <button @click="addPlayer(player)" class="add-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg mt-4 flex items-center justify-center">
+            <font-awesome-icon icon="plus" class="mr-2" /> Aggiungi
           </button>
         </div>
       </div>
@@ -42,8 +42,8 @@
               </div>
             </div>
           </div>
-          <button @click="addPlayer(player)" class="add-button">
-            <font-awesome-icon icon="plus" /> Aggiungi
+          <button @click="addPlayer(player)" class="add-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg mt-4 flex items-center justify-center">
+            <font-awesome-icon icon="plus" class="mr-2" /> Aggiungi
           </button>
         </div>
       </div>
@@ -280,11 +280,13 @@ thead th {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.3s ease;
 }
 
 .data-card .header {
   font-weight: bold;
   margin-bottom: 0.5rem;
+  background-color: #f0f4f8;
 }
 
 .player-cost {
@@ -326,6 +328,8 @@ button:hover {
   justify-content: center;
   gap: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
 }
 
 .add-button i {

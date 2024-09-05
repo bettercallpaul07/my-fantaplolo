@@ -7,21 +7,6 @@
       </div>
 
       <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
-        <h2 class="text-4xl font-bold">{{ giocatoriDisponibili }}</h2>
-        <p class="text-lg">Slot</p>
-      </div>
-
-      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
-        <h2 class="text-4xl font-bold">{{ giocatoriDiRuolo }}</h2>
-        <p class="text-lg">Movimento</p>
-      </div>
-
-      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
-        <h2 class="text-4xl font-bold">{{ portieri }}</h2>
-        <p class="text-lg">Portieri</p>
-      </div>
-
-      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
         <h2 class="text-4xl font-bold">{{ fantamilioniSpesi }}</h2>
         <p class="text-lg">FML spesi</p>
       </div>
@@ -30,10 +15,45 @@
         <h2 class="text-4xl font-bold">{{ oneShotValue }}</h2>
         <p class="text-lg">One Shot</p>
       </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ giocatoriDisponibili }}</h2>
+        <p class="text-lg">Da Prendere</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ giocatoriDiRuolo }}</h2>
+        <p class="text-lg">Di movimento</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ portieri }}</h2>
+        <p class="text-lg">Portieri</p>
+      </div>
+    </div>
+
+    <!-- Blocco per aggiungere rapidamente i giocatori -->
+    <div class="quick-add-player mt-8">
+      <h2 class="text-2xl font-bold mb-4">Aggiunta rapida</h2>
+      <div class="flex items-center mb-4">
+        <input v-model="searchQuery" @input="searchPlayer" type="text" placeholder="Cerca giocatore" class="input-search p-2 border rounded-lg flex-1 mr-2" />
+      </div>
+      <div v-if="searchResults.length" class="search-results mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-xl font-bold">Risultati della ricerca</h3>
+          <button @click="clearSearch" class="btn-close bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-lg">Chiudi</button>
+        </div>
+        <ul>
+          <li v-for="(player, index) in searchResults" :key="index" class="flex justify-between items-center p-2 border-b">
+            <span>{{ player[0] }} - {{ player[1] }} - {{ player[4] }}</span>
+            <button @click="promptPlayerCost(player)" class="btn-add bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded-lg">Aggiungi</button>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div class="recent-players-container mt-8">
-      <h2 class="text-2xl font-bold mb-4">Ultimi 10 giocatori acquistati</h2>
+      <h2 class="text-2xl font-bold mb-4">Acquisti recenti</h2>
       <div class="recent-players-grid">
         <div v-for="(player, index) in recentPlayers" :key="index" class="player-card mb-4">
           <div class="player-info">
@@ -50,7 +70,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import Papa from 'papaparse'
+import Swal from 'sweetalert2'
 import { supabase } from '~/src/supabase'
 
 
@@ -64,12 +86,82 @@ import { supabase } from '~/src/supabase'
   const fantamilioniSpesi = ref(0)
   const recentPlayers = ref([])
 
-  // const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-  // const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-  // const supabase = createClient(supabaseUrl, supabaseKey)
+  const searchQuery = ref('')
+  const searchResults = ref([])
+
+  watch(searchQuery, async (newQuery) => {
+  if (newQuery.length >= 2) {
+    await searchPlayer()
+  } else {
+    searchResults.value = []
+  }
+})
+
+function clearSearch() {
+  searchQuery.value = ''
+  searchResults.value = []
+}
+
+async function promptPlayerCost(player) {
+  const { value: cost } = await Swal.fire({
+    title: 'Inserisci il costo del giocatore',
+    input: 'number',
+    inputLabel: 'Costo',
+    inputPlaceholder: 'Inserisci il costo del giocatore',
+    showCancelButton: true,
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Devi inserire un costo!'
+      }
+    }
+  })
+
+  if (cost) {
+    addPlayer(player, cost)
+  }
+}
 
 
-  onMounted(async () => {
+async function searchPlayer() {
+  const response = await fetch('./csv/Quot.csv')
+  const csvData = await response.text()
+  const parsedData = Papa.parse(csvData, { header: false }).data
+
+  // Rimuovi l'intestazione del CSV dai risultati
+  parsedData.shift()
+
+  searchResults.value = parsedData.filter(player =>
+    player[0].toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+}
+
+async function addPlayer(player, cost) {
+  const newPlayer = {
+    player: player[0],
+    team: player[1],
+    role: player[4],
+    cost: cost
+  }
+
+  const { data, error } = await supabase
+    .from('players')
+    .insert([newPlayer])
+
+  if (error) {
+    console.error('Errore nell\'aggiunta del giocatore:', error)
+  } else {
+    console.log('Giocatore aggiunto con successo:', data)
+    // Aggiorna la lista dei giocatori recenti
+    recentPlayers.value.unshift(newPlayer) // Aggiungi il nuovo giocatore all'inizio dell'array
+    if (recentPlayers.value.length > 20) { // Limita la lista a 20 giocatori
+      recentPlayers.value.pop() // Rimuovi l'ultimo giocatore
+    }
+      // Ricarica la pagina
+      location.reload()
+  }
+}
+
+onMounted(async () => {
   const { data: players, error } = await supabase
     .from('players')
     .select('*')
@@ -77,9 +169,10 @@ import { supabase } from '~/src/supabase'
     console.error('Errore durante il recupero dei giocatori:', error)
     return
   }
-  recentPlayers.value = players.slice(-10).reverse()
+  recentPlayers.value = players.slice(-20).reverse() // Mostra solo gli ultimi 20 giocatori
   updateCounts(players)
 })
+
 
 const updateCounts = (players) => {
   const totalCost = players.reduce((sum, player) => sum + Number(player.cost), 0)
@@ -95,6 +188,7 @@ const updateCounts = (players) => {
 </script>
 
 <style scoped>
+
 .container {
   max-width: 800px;
   margin: 0 auto;
@@ -139,6 +233,25 @@ const updateCounts = (players) => {
 .recent-players-grid {
   display: flex;
   flex-direction: column;
+}
+
+
+.team-badge, .role-badge {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.btn-search, .btn-add {
+  transition: transform 0.2s ease;
+}
+
+.btn-search:hover, .btn-add:hover {
+  transform: scale(1.05);
+}
+
+.input-search {
+  width: 100%;
+  max-width: 300px;
 }
 
 .player-card {
