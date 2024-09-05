@@ -360,8 +360,12 @@ button:hover {
   }
 
   .text-sm {
-    font-size: 0.75rem; /* text-xs */
-  }
+  font-size: 0.775rem; /* Aumentata la dimensione del font */
+  color: #ffffff; /* Cambiato il colore del testo */
+  background-color: #4a5568; /* Aggiunto uno sfondo */
+  padding: 0.5rem; /* Aggiunto padding per migliorare la leggibilità */
+  border-radius: 0.25rem; /* Aggiunto bordi arrotondati */
+}
 
   .add-button {
     font-size: 0.50rem; /* text-sm */

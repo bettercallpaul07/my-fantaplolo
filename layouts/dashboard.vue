@@ -63,6 +63,7 @@
     </nav>
   </div>
 </template>
+
 <style scoped>
 body {
   margin: 0;
@@ -160,7 +161,7 @@ html, body, #__nuxt, .flex-col {
 @media (min-width: 768px) {
   .sidebar {
     display: flex;
-    width: 10rem; /* Larghezza della sidebar ridotta */
+    width: 10rem; /* Aumentata la larghezza della sidebar */
     position: fixed;
     height: 100vh; /* Altezza della sidebar */
   }
@@ -170,7 +171,7 @@ html, body, #__nuxt, .flex-col {
   }
 
   .flex-1 {
-    margin-left: 10rem; /* Margine sinistro per il contenuto quando la sidebar è visibile */
+    margin-left: 4rem; /* Ridotto il margine sinistro per il contenuto */
   }
 }
 
