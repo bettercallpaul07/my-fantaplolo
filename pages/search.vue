@@ -7,80 +7,53 @@
       class="w-full p-2 mb-4 border rounded"
     />
     <div v-if="filteredData.length === 1" class="single-result">
-      <div class="player-card">
+      <div class="player-card bg-white shadow-md rounded-lg p-4 mb-4">
         <div class="player-info">
-          <span class="player-name">{{ filteredData[0][0] }}</span>
-          <div class="player-details">
-            <span class="badge">{{ filteredData[0][1] }}</span>
-            <span class="badge">{{ filteredData[0][4] }}</span> <!-- Ruolo -->
+          <span class="player-name text-lg font-bold">{{ filteredData[0][0] }}</span>
+          <div class="player-details flex flex-wrap gap-2 mt-2">
+            <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-sm">{{ filteredData[0][1] }}</span> <!-- Team -->
+            <span class="badge bg-green-500 text-white px-2 py-1 rounded text-sm">{{ filteredData[0][4] }}</span> <!-- Role -->
           </div>
-          <div class="player-other-details">
+          <div class="player-other-details mt-4">
             <div class="data-section">
-              <h3>2024</h3>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[5] }}:</span> {{ filteredData[0][5] }} <!-- Pv(2024) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[6] }}:</span> {{ filteredData[0][6] }} <!-- Fm(2024) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[7] }}:</span> {{ filteredData[0][7] }} <!-- Gf(2024) -->
-              </div>
-            </div>
-            <div class="data-section">
-              <h3>2023</h3>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[8] }}:</span> {{ filteredData[0][8] }} <!-- Pv(2023) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[9] }}:</span> {{ filteredData[0][9] }} <!-- Fm(2023) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[10] }}:</span> {{ filteredData[0][10] }} <!-- Gf(2023) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[11] }}:</span> {{ filteredData[0][11] }} <!-- Ass(2023) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[12] }}:</span> {{ filteredData[0][12] }} <!-- Amm(2023) -->
-              </div>
-              <div class="data-card">
-                <span class="header">{{ csvHeaders[13] }}:</span> {{ filteredData[0][13] }} <!-- Esp(2023) -->
+              <h3 class="text-md font-semibold">2024</h3>
+              <div v-for="(header, index) in csvHeaders.slice(5)" :key="index" class="data-card mt-2">
+                <span class="header font-semibold">{{ header }}:</span> <span class="text-sm">{{ filteredData[0][index + 5] }}</span>
               </div>
             </div>
           </div>
+          <button @click="addPlayer(filteredData[0])" class="add-button">
+            <i class="fas fa-plus"></i> Aggiungi
+          </button>
         </div>
-        <div class="player-cost">
-          <span>{{ filteredData[0][3] }}</span>
-        </div>
-        <button @click="addPlayer(filteredData[0])" class="add-button">
-          <font-awesome-icon :icon="['fas', 'plus']" />
-        </button>
       </div>
     </div>
-    <div v-else class="table-responsive">
-      <table class="min-w-full bg-white border rounded">
-        <thead>
-          <tr>
-            <th v-for="header in csvHeaders" :key="header" class="px-4 py-2 border">{{ header }}</th>
-            <th class="px-4 py-2 border">Azione</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, index) in filteredData" :key="index" class="player-row">
-            <td v-for="(cell, cellIndex) in row" :key="cellIndex" class="px-4 py-2 border" :data-label="csvHeaders[cellIndex]">{{ cell }}</td>
-            <td class="px-4 py-2 border" data-label="Azione">
-              <button @click="addPlayer(row)" class="bg-blue-500 text-white px-4 py-2 rounded">Aggiungi</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="results-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-for="(player, index) in filteredData" :key="index" class="player-card bg-white shadow-md rounded-lg p-4 mb-4">
+        <div class="player-info">
+          <span class="player-name text-lg font-bold">{{ player[0] }}</span>
+          <div class="player-details flex flex-wrap gap-2 mt-2">
+            <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-sm">{{ player[1] }}</span> <!-- Team -->
+            <span class="badge bg-green-500 text-white px-2 py-1 rounded text-sm">{{ player[4] }}</span> <!-- Role -->
+          </div>
+          <div class="player-other-details mt-4">
+            <div class="data-section">
+              <h3 class="text-md font-semibold">2024</h3>
+              <div v-for="(header, index) in csvHeaders.slice(5)" :key="index" class="data-card mt-2">
+                <span class="header font-semibold">{{ header }}:</span> <span class="text-sm">{{ player[index + 5] }}</span>
+              </div>
+            </div>
+          </div>
+          <button @click="addPlayer(player)" class="add-button">
+            <font-awesome-icon icon="plus" /> Aggiungi
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-
 import { ref, onMounted, computed } from 'vue'
 import Papa from 'papaparse'
 import { useRouter } from 'vue-router'
@@ -88,10 +61,9 @@ import Swal from 'sweetalert2'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '~/src/supabase'
 
-library.add(faPlus) 
-
+library.add(faPlus)
 
 definePageMeta({
   layout: 'dashboard'
@@ -128,11 +100,6 @@ const filteredData = computed(() => {
 
 const router = useRouter()
 
-  const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-  const supabase = createClient(supabaseUrl, supabaseKey)
-
-
 const addPlayer = async (player) => {
   Swal.fire({
     title: 'Inserisci il costo del giocatore',
@@ -159,7 +126,6 @@ const addPlayer = async (player) => {
       storedPlayers.push({ player, cost })
       localStorage.setItem('selectedPlayers', JSON.stringify(storedPlayers))
 
-      
       // Decrementa il numero di portieri se l'RM del giocatore è "POR"
       if (player[4] === 'Por') {
         const portieri = JSON.parse(localStorage.getItem('portieri')) || 3
@@ -179,8 +145,6 @@ const addPlayer = async (player) => {
       }
 
       Swal.fire('Giocatore aggiunto!', '', 'success')
-
-
 
       router.push('/')
     }
@@ -312,10 +276,17 @@ thead th {
 }
 
 .badge {
-  background-color: #e0e0e0;
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem; /* Aumentato il padding */
-  font-size: 1rem; /* Aumentato il font-size */
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.bg-green-500 {
+  background-color: #10b981;
 }
 
 .player-other-details {
@@ -364,16 +335,33 @@ thead th {
   right: 1rem;
 }
 
+button {
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
 .add-button {
-  background: green;
-  border: 1px solid #ccc;
+  background: #28a745;
+  border: none;
   border-radius: 0.25rem;
   cursor: pointer;
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.25rem 0.5rem;
   position: absolute;
   bottom: 0.5rem;
   right: 0.5rem;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-button i {
+  font-size: 1.2rem;
 }
 </style>

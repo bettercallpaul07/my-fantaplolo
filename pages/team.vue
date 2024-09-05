@@ -35,13 +35,12 @@ import Swal from 'sweetalert2'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '~/src/supabase'
 
 
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+// const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+// const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+// const supabase = createClient(supabaseUrl, supabaseKey)
 
 const selectedPlayers = ref([])
 const rmCounts = ref({})

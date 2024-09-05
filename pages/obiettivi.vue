@@ -38,12 +38,11 @@
   <script setup>
   import { ref, onMounted } from 'vue'
   import Swal from 'sweetalert2'
-  import { createClient } from '@supabase/supabase-js'
+  import { supabase } from '~/src/supabase'
   
-  const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-  
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  // const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+  // const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  // const supabase = createClient(supabaseUrl, supabaseKey)
   
   const players = ref([])
   const selectedPlayer = ref('')

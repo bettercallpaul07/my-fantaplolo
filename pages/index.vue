@@ -2,12 +2,12 @@
   <div class="container mx-auto p-4">
     <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
       <h2 class="text-4xl font-bold">{{ fantamilioniDisponibili }}</h2>
-      <p class="text-lg">Fantamilioni disponibili</p>
+      <p class="text-lg">FML disponibili</p>
     </div>
 
     <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
       <h2 class="text-4xl font-bold">{{ giocatoriDisponibili }}</h2>
-      <p class="text-lg">Giocatori disponibili</p>
+      <p class="text-lg">Slot disponibili</p>
     </div>
 
     <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
@@ -22,7 +22,7 @@
 
     <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
       <h2 class="text-4xl font-bold">{{ fantamilioniSpesi }}</h2>
-      <p class="text-lg">Fantamilioni spesi</p>
+      <p class="text-lg">FML spesi</p>
     </div>
 
     <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
@@ -49,20 +49,22 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '~/src/supabase'
+
+
 
   const oneShotValue = ref(0)
   const fantamilioniDisponibili = ref(500)
+  const fmlIniziali = ref(500)
   const giocatoriDisponibili = ref(28)
   const giocatoriDiRuolo = ref(25)
   const portieri = ref(3)
   const fantamilioniSpesi = ref(0)
   const recentPlayers = ref([])
 
-  const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  // const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+  // const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  // const supabase = createClient(supabaseUrl, supabaseKey)
 
 
   onMounted(async () => {
@@ -80,14 +82,12 @@ import { createClient } from '@supabase/supabase-js'
 const updateCounts = (players) => {
   const totalCost = players.reduce((sum, player) => sum + Number(player.cost), 0)
   fantamilioniSpesi.value = Math.min(totalCost, 999) // Assicurati che sia un numero a tre cifre
-  fantamilioniDisponibili.value = 500 - fantamilioniSpesi.value
+  fantamilioniDisponibili.value = fmlIniziali.value - fantamilioniSpesi.value
   giocatoriDisponibili.value = 28 - players.length
   portieri.value = 3 - players.filter(player => {
-    console.log(player.player) // Aggiungi il console log qui
-  
-    return player.player[4] === 'POR'
-  }).length
-  giocatoriDiRuolo.value = 25 - players.filter(player => player.player[5] !== 'POR').length
+    return player.role === 'Por'
+  }).length 
+  giocatoriDiRuolo.value = 25 - players.filter(player => player.role !== 'Por').length
   oneShotValue.value = fantamilioniDisponibili.value - giocatoriDisponibili.value
 }
 </script>
