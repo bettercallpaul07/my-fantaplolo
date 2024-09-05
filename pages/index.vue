@@ -1,41 +1,43 @@
 <template>
   <div class="container mx-auto p-4">
-    <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-      <h2 class="text-4xl font-bold">{{ fantamilioniDisponibili }}</h2>
-      <p class="text-lg">FML disponibili</p>
+    <div class="grid-container">
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ fantamilioniDisponibili }}</h2>
+        <p class="text-lg">FML</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ giocatoriDisponibili }}</h2>
+        <p class="text-lg">Slot</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ giocatoriDiRuolo }}</h2>
+        <p class="text-lg">Movimento</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ portieri }}</h2>
+        <p class="text-lg">Portieri</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ fantamilioniSpesi }}</h2>
+        <p class="text-lg">FML spesi</p>
+      </div>
+
+      <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center mb-4">
+        <h2 class="text-4xl font-bold">{{ oneShotValue }}</h2>
+        <p class="text-lg">One Shot</p>
+      </div>
     </div>
 
-    <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-      <h2 class="text-4xl font-bold">{{ giocatoriDisponibili }}</h2>
-      <p class="text-lg">Slot disponibili</p>
-    </div>
-
-    <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-      <h2 class="text-4xl font-bold">{{ giocatoriDiRuolo }}</h2>
-      <p class="text-lg">Giocatori di ruolo</p>
-    </div>
-
-    <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-      <h2 class="text-4xl font-bold">{{ portieri }}</h2>
-      <p class="text-lg">Portieri</p>
-    </div>
-
-    <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-      <h2 class="text-4xl font-bold">{{ fantamilioniSpesi }}</h2>
-      <p class="text-lg">FML spesi</p>
-    </div>
-
-    <div class="card bg-white p-6 rounded-lg shadow-lg flex flex-col items-center justify-center">
-      <h2 class="text-4xl font-bold">{{ oneShotValue }}</h2>
-      <p class="text-lg">One Shot</p>
-    </div>
-
-    <div class="recent-players-container">
+    <div class="recent-players-container mt-8">
       <h2 class="text-2xl font-bold mb-4">Ultimi 10 giocatori acquistati</h2>
       <div class="recent-players-grid">
-        <div v-for="(player, index) in recentPlayers" :key="index" class="player-card">
+        <div v-for="(player, index) in recentPlayers" :key="index" class="player-card mb-4">
           <div class="player-info">
-            <span class="player-name">{{ player.player}}</span>
+            <span class="player-name">{{ player.player }}</span>
             <span class="player-details">({{ player.team }}) - {{ player.role }}</span>
           </div>
           <div class="player-cost">
@@ -94,50 +96,57 @@ const updateCounts = (players) => {
 
 <style scoped>
 .container {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
-@media (min-width: 768px) {
-  .container {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 .card {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.card h2 {
+  font-size: 2rem; /* text-4xl */
+}
+
+.card p {
+  font-size: 0.75rem; /* text-sm */
+  line-height: 1.25rem; /* Aumenta l'altezza della linea per migliorare la leggibilità */
+  margin: 0.5rem 0; /* Aggiungi margine per separare meglio il testo */
+  color: #333; /* Colore del testo per migliorare il contrasto */
 }
 
 .recent-players-container {
-  grid-column: 1 / -1;
-  width: 100%;
+  margin-top: 2rem;
+}
+
+.recent-players-container h2 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 
 .recent-players-grid {
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .recent-players-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  display: flex;
+  flex-direction: column;
 }
 
 .player-card {
-  background-color: white;
+  background: #ffffff;
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -150,47 +159,86 @@ const updateCounts = (players) => {
 
 .player-name {
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1rem; /* text-lg */
 }
 
 .player-details {
-  font-size: 1rem;
-  color: #555;
+  font-size: 0.875rem; /* text-sm */
 }
 
 .player-cost {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 1rem; /* text-lg */
   font-weight: bold;
-  font-size: 1rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .card h2 {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* text-3xl */
   }
 
   .card p {
-    font-size: 1rem;
+    font-size: 0.875rem; /* text-sm */
+  }
+
+  .recent-players-container h2 {
+    font-size: 1.25rem; /* text-xl */
   }
 
   .player-name {
-    font-size: 1rem;
+    font-size: 0.875rem; /* text-sm */
   }
 
   .player-details {
-    font-size: 0.9rem;
+    font-size: 0.75rem; /* text-xs */
   }
 
   .player-cost {
-    width: 30px;
-    height: 30px;
-    font-size: 0.9rem;
+    font-size: 0.875rem; /* text-sm */
+  }
+}
+
+@media (max-width: 640px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .card {
+    padding: 0.4rem;
+  }
+
+  .card h2 {
+    font-size: 1.25rem; /* text-2xl */
+  }
+
+  .card p {
+    font-size: 0.75rem; /* text-sm */
+    line-height: 1.5rem; /* Aumenta ulteriormente l'altezza della linea per migliorare la leggibilità su schermi piccoli */
+    margin: 0.25rem 0; /* Riduci il margine per mantenere il testo compatto */
+  }
+
+  .recent-players-container h2 {
+    font-size: 1rem; /* text-lg */
+  }
+
+  .player-card {
+    padding: 0.75rem;
+  }
+
+  .player-name {
+    font-size: 0.75rem; /* text-sm */
+  }
+
+  .player-details {
+    font-size: 0.625rem; /* text-xs */
+  }
+
+  .player-cost {
+    font-size: 0.75rem; /* text-sm */
   }
 }
 </style>

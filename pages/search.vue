@@ -3,7 +3,7 @@
     <input
       v-model="searchQuery"
       type="text"
-      placeholder="Cerca giocatore..."
+      placeholder="Cerca giocatore o squadra..."
       class="w-full p-2 mb-4 border rounded"
     />
     <div v-if="filteredData.length === 1" class="single-result">
@@ -16,14 +16,13 @@
           </div>
           <div class="player-other-details mt-4">
             <div class="data-section">
-              <h3 class="text-md font-semibold">2024</h3>
               <div v-for="(header, index) in csvHeaders.slice(5)" :key="index" class="data-card mt-2">
                 <span class="header font-semibold">{{ header }}:</span> <span class="text-sm">{{ filteredData[0][index + 5] }}</span>
               </div>
             </div>
           </div>
-          <button @click="addPlayer(filteredData[0])" class="add-button">
-            <i class="fas fa-plus"></i> Aggiungi
+          <button @click="addPlayer(player)" class="add-button">
+            <font-awesome-icon icon="plus" /> Aggiungi
           </button>
         </div>
       </div>
@@ -38,7 +37,6 @@
           </div>
           <div class="player-other-details mt-4">
             <div class="data-section">
-              <h3 class="text-md font-semibold">2024</h3>
               <div v-for="(header, index) in csvHeaders.slice(5)" :key="index" class="data-card mt-2">
                 <span class="header font-semibold">{{ header }}:</span> <span class="text-sm">{{ player[index + 5] }}</span>
               </div>
@@ -51,7 +49,7 @@
       </div>
     </div>
   </div>
-</template>
+  </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
@@ -186,38 +184,7 @@ thead th {
 }
 
 @media (max-width: 1400px) {
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
 
-  thead {
-    display: none;
-  }
-
-  tr {
-    margin-bottom: 1rem;
-    border-bottom: 1px solid transparent;
-  }
-
-  td {
-    text-align: right;
-    padding-left: 50%;
-    position: relative;
-  }
-
-  td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    width: 50%;
-    padding-left: 1rem;
-    font-weight: bold;
-    text-align: left;
-  }
-
-  th, td {
-    padding: 4px;
-  }
 
   input {
     font-size: 14px;
@@ -364,4 +331,46 @@ button:hover {
 .add-button i {
   font-size: 1.2rem;
 }
+
+/* Stili per rendere le schede più piccole sui dispositivi mobili */
+@media (max-width: 1240px) {
+  .player-card {
+    padding: 0.5rem;
+  }
+
+  .player-name {
+    font-size: 1rem;
+  }
+
+  .badge {
+    font-size: 0.75rem; /* text-xs */
+    padding: 0.1rem 0.25rem;
+  }
+
+  .data-section {
+    margin-top: 0.5rem;
+  }
+
+  .data-card {
+    margin-bottom: 0.25rem;
+  }
+
+  .header {
+    font-size: 0.75rem; /* text-xs */
+  }
+
+  .text-sm {
+    font-size: 0.75rem; /* text-xs */
+  }
+
+  .add-button {
+    font-size: 0.50rem; /* text-sm */
+    padding: 0.25rem 0.5rem;
+  }
+
+  .add-button i {
+    font-size: 1rem;
+  }
+}
+
 </style>

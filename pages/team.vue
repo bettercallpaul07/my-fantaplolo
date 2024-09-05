@@ -20,9 +20,9 @@
     </div>
     <div class="rm-count">
       <h3 class="text-xl font-bold mt-4">Conteggio Ruoli</h3>
-      <ul>
-        <li v-for="(count, rm) in rmCounts" :key="rm">
-          <span class="role-badge">{{ rm }}</span>: <span class="count-badge">{{ count }}</span>
+      <ul class="role-list">
+        <li v-for="(count, rm) in rmCounts" :key="rm" class="role-item">
+          <span class="role-badge">{{ rm }}</span> <span class="count-badge">{{ count }}</span>
         </li>
       </ul>
     </div>
@@ -115,115 +115,153 @@ const updateRmCounts = () => {
 
 <style scoped>
 .container {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 .team-players-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 schede per riga */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
 }
 
-/* Media query per rendere la sezione responsive */
-@media (max-width: 768px) {
-  .rm-count li {
-    font-size: 0.875rem; /* Riduci la dimensione del testo su schermi piccoli */
-  }
-
-  .role-badge, .count-badge {
-    padding: 0.1rem 0.3rem; /* Riduci il padding delle nuvolette su schermi piccoli */
-  }
-
-  .team-players-grid {
-    grid-template-columns: 1fr; /* 1 scheda per riga su schermi piccoli */
-  }
-}
-
-
 .player-card {
-  background-color: white;
+  background: #f5f5f5;
   padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
 }
 
 .player-info {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .player-name {
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1rem; /* text-lg */
 }
 
 .player-details {
-  font-size: 1rem;
-  color: #555;
-  margin-right: 0.2rem; /* Aggiungi margine per distanziare */
-  margin-left: 0.2rem;
+  font-size: 0.875rem; /* text-sm */
 }
 
 .player-rm {
-  font-size: 1rem;
-  color: white;
-  background-color: #007bff;
-  padding: 0.2rem 0.5rem;
-  border-radius: 0.25rem;
-  margin-top: 0.5rem; /* Aggiungi margine per distanziare */
+  font-size: 0.875rem; /* text-sm */
 }
 
 .player-cost {
-  font-size: 1.2rem;
+  font-size: 1rem; /* text-lg */
   font-weight: bold;
   margin-top: 0.5rem;
 }
 
 .remove-button {
-  background: red;
+  background: #e3342f;
   border: none;
   border-radius: 0.25rem;
   cursor: pointer;
   color: white;
   padding: 0.5rem 1rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   margin-top: 0.5rem;
 }
 
 .rm-count {
   margin-top: 2rem;
-  text-align: center;
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.rm-count ul {
-  list-style-type: none;
+.rm-count h3 {
+  font-size: 1.5rem; /* text-xl */
+  margin-bottom: 1rem;
+}
+
+.role-list {
+  list-style: none;
   padding: 0;
 }
 
-.rm-count li {
-  font-size: 1rem;
-  margin: 0.5rem 0;
+.role-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .role-badge {
-  background-color: #007bff;
+  background: #3490dc;
   color: white;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
+  font-size: 0.875rem; /* text-sm */
+  margin-right: 0.5rem;
 }
 
 .count-badge {
-  background-color: #28a745;
+  background: #38c172;
   color: white;
-  padding: 0.2rem 0.5rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
+  font-size: 0.875rem; /* text-sm */
+}
+
+@media (max-width: 1024px) {
+  .team-players-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .player-card {
+    padding: 0.75rem;
+  }
+
+  .player-name {
+    font-size: 0.875rem; /* text-sm */
+  }
+
+  .player-details, .player-rm, .player-cost {
+    font-size: 0.75rem; /* text-xs */
+  }
+
+  .remove-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem; /* text-sm */
+  }
+}
+
+@media (max-width: 640px) {
+  .team-players-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .player-card {
+    padding: 0.5rem;
+  }
+
+  .player-name {
+    font-size: 0.75rem; /* text-sm */
+  }
+
+  .player-details, .player-rm, .player-cost {
+    font-size: 0.625rem; /* text-xs */
+  }
+
+  .remove-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem; /* text-xs */
+  }
 }
 </style>

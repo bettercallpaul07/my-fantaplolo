@@ -1,192 +1,277 @@
 <template>
-    <div class="container mx-auto p-4">
-      <div class="header">
-        <h2 class="text-2xl font-bold mb-4">Aggiungi Nota Calciatore</h2>
-      </div>
-      <form @submit.prevent="addNote">
-        <div class="mb-4">
-          <label for="player" class="block text-gray-700 text-sm font-bold mb-2">Nome Calciatore:</label>
-          <select v-model="selectedPlayer" id="player" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            <option v-for="player in players" :key="player" :value="player">{{ player }}</option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="note" class="block text-gray-700 text-sm font-bold mb-2">Nota:</label>
-          <textarea v-model="note" id="note" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-        </div>
-        <div class="flex items-center justify-between">
-          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Aggiungi Nota
-          </button>
-        </div>
-      </form>
-      <div class="notes mt-8">
-        <h2 class="text-2xl font-bold mb-4">Note Calciatori</h2>
-        <div v-for="(note, index) in notes" :key="note.id" class="note-card">
-          <div class="note-info">
-            <span class="note-player">{{ note.player }}</span>
-            <p class="note-text">{{ note.note }}</p>
+  <div class="container mx-auto p-4">
+    <input
+      v-model="searchQuery"
+      type="text"
+      placeholder="Cerca giocatore..."
+      class="w-full p-2 mb-4 border rounded"
+    />
+    <ul v-if="searchQuery && filteredData.length" class="suggestions-list bg-white shadow-md rounded-lg p-2">
+      <li v-for="(player, index) in filteredData" :key="index" @click="selectPlayer(player)" class="suggestion-item p-2 cursor-pointer hover:bg-gray-200">
+        {{ player[0] }} - {{ player[1] }} - {{ player[4] }}
+      </li>
+    </ul>
+    <div v-if="selectedPlayer" class="single-result mt-4">
+      <div class="player-card bg-white shadow-md rounded-lg p-4 mb-4">
+        <div class="player-info">
+          <span class="player-name text-lg font-bold">{{ selectedPlayer[0] }}</span>
+          <div class="player-details flex flex-wrap gap-2 mt-2">
+            <span class="badge bg-blue-500 text-white px-2 py-1 rounded text-sm">{{ selectedPlayer[1] }}</span> <!-- Team -->
+            <span class="badge bg-green-500 text-white px-2 py-1 rounded text-sm">{{ selectedPlayer[4] }}</span> <!-- Role -->
           </div>
-          <button @click="confirmRemoveNote(note.id)" class="remove-button">
-            <font-awesome-icon :icon="['fas', 'trash-alt']" />
+          <div class="player-other-details mt-4">
+            <div class="data-section">
+              <h3 class="text-md font-semibold">2024</h3>
+              <div v-for="(header, index) in csvHeaders.slice(5)" :key="index" class="data-card mt-2">
+                <span class="header font-semibold">{{ header }}:</span> <span class="text-sm">{{ selectedPlayer[index + 5] }}</span>
+              </div>
+            </div>
+          </div>
+          <textarea v-model="note" placeholder="Aggiungi una nota..." class="w-full p-2 mt-4 border rounded"></textarea>
+          <button @click="addPlayer(selectedPlayer)" class="add-button mt-2">
+            <font-awesome-icon icon="plus" /> Aggiungi
           </button>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue'
-  import Swal from 'sweetalert2'
-  import { supabase } from '~/src/supabase'
-  
-  // const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
-  // const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-  // const supabase = createClient(supabaseUrl, supabaseKey)
-  
-  const players = ref([])
-  const selectedPlayer = ref('')
-  const note = ref('')
-  const notes = ref([])
-  
-  onMounted(async () => {
-    await fetchPlayersFromCSV()
-    await fetchNotesFromSupabase()
-  })
-  
-  const fetchPlayersFromCSV = async () => {
-    const response = await fetch('./csv/Quot.csv')
-    const data = await response.text()
-    const rows = data.split('\n').slice(1) // Salta l'intestazione
-    players.value = rows.map(row => row.split(';')[0]).filter(name => name) // Prendi solo i nomi
-  }
-  
-  const fetchNotesFromSupabase = async () => {
-    const { data, error } = await supabase
-      .from('obiettivi')
-      .select('*')
-    if (error) {
-      console.error('Errore nel recuperare le note:', error)
-    } else {
-      notes.value = data
-    }
-  }
-  
-  const addNote = async () => {
-    if (selectedPlayer.value && note.value) {
-      const { data, error } = await supabase
-        .from('obiettivi')
-        .insert([{ player: selectedPlayer.value, note: note.value }])
-      if (error) {
-        console.error('Errore nel salvare la nota:', error)
-      } else {
-        Swal.fire('Aggiunto!', 'La nota è stata aggiunta con successo.', 'success').then(() => {
-          location.reload()
-        })
-      }
-    } else {
-      alert('Per favore, compila tutti i campi.')
-    }
-  }
-  
-  const confirmRemoveNote = (noteId) => {
-    Swal.fire({
-      title: 'Sei sicuro?',
-      text: "Non potrai annullare questa operazione!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sì, cancella!',
-      cancelButtonText: 'No, annulla'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await removeNote(noteId)
-        Swal.fire('Cancellato!', 'La nota è stata rimossa.', 'success')
-      }
+    <div class="obiettivi mt-8">
+      <h2 class="text-xl font-bold mb-4">Obiettivi</h2>
+      <ul>
+        <li v-for="(obiettivo, index) in obiettivi" :key="index" class="obiettivo-item flex justify-between items-center p-2 border-b">
+          <div>
+            <span>{{ obiettivo.player }}</span>
+            <p class="text-sm text-gray-300">{{ obiettivo.note }}</p>
+          </div>
+          <button @click="removeObiettivo(obiettivo.id)" class="remove-button text-red-500">
+            <font-awesome-icon icon="trash" />
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+<script setup>
+import { ref, onMounted, watch } from 'vue'
+import Papa from 'papaparse'
+import Swal from 'sweetalert2'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { supabase } from '~/src/supabase'
+
+library.add(faPlus, faTrash)
+
+const searchQuery = ref('')
+const csvHeaders = ref([])
+const csvData = ref([])
+const filteredData = ref([])
+const selectedPlayer = ref(null)
+const note = ref('')
+const obiettivi = ref([])
+
+onMounted(() => {
+  loadCSV()
+  fetchObiettivi()
+})
+
+const loadCSV = () => {
+  const filePath = './csv/Quot.csv' // Modifica il percorso del file CSV
+  fetch(filePath)
+    .then(response => response.text())
+    .then(data => {
+      Papa.parse(data, {
+        header: false,
+        delimiter: ';',
+        complete: (results) => {
+          csvHeaders.value = results.data[0]
+          csvData.value = results.data.slice(1)
+          filteredData.value = csvData.value
+        }
+      })
     })
+}
+
+const filterPlayers = () => {
+  const query = searchQuery.value.toLowerCase()
+  filteredData.value = csvData.value.filter(player => 
+    player[0].toLowerCase().includes(query) ||
+    player[1].toLowerCase().includes(query) ||
+    player[4].toLowerCase().includes(query)
+  )
+}
+
+const selectPlayer = (player) => {
+  selectedPlayer.value = player
+  searchQuery.value = ''
+  filteredData.value = []
+}
+
+const fetchObiettivi = async () => {
+  const { data, error } = await supabase
+    .from('obiettivi')
+    .select('*')
+  if (error) {
+    console.error('Error fetching obiettivi:', error)
+  } else {
+    obiettivi.value = data
   }
-  
-  const removeNote = async (noteId) => {
-    const { error } = await supabase
-      .from('obiettivi')
-      .delete()
-      .eq('id', noteId)
-    if (error) {
-      console.error('Errore nel cancellare la nota:', error)
-    } else {
-      notes.value = notes.value.filter(note => note.id !== noteId)
-    }
+}
+
+const addPlayer = async (player) => {
+  const { data, error } = await supabase
+    .from('obiettivi')
+    .insert([
+      { player: player[0], note: note.value }
+    ])
+  if (error) {
+    Swal.fire('Errore', 'Non è stato possibile aggiungere il giocatore', 'error')
+  } else {
+    Swal.fire('Successo', 'Giocatore aggiunto con successo', 'success')
+    fetchObiettivi()
+    note.value = ''
+    selectedPlayer.value = null
   }
-  </script>
-  
-  <style scoped>
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
+}
+
+const removeObiettivo = async (id) => {
+  const { data, error } = await supabase
+    .from('obiettivi')
+    .delete()
+    .eq('id', id)
+  if (error) {
+    Swal.fire('Errore', 'Non è stato possibile rimuovere l\'obiettivo', 'error')
+  } else {
+    Swal.fire('Successo', 'Obiettivo rimosso con successo', 'success')
+    fetchObiettivi()
   }
-  
-  .header {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  form {
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  
-  button {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #45a049;
-  }
-  
-  .notes {
-    margin-top: 20px;
-  }
-  
-  .note-card {
-    background: #f5f5f5;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .note-info {
-    flex-grow: 1;
-  }
-  
-  .note-player {
-    font-weight: bold;
-  }
-  
-  .note-text {
-    margin-top: 0.5rem;
-  }
-  
-  .remove-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #e3342f;
-  }
-  
-  .remove-button:hover {
-    color: #cc1f1a;
-  }
-  </style>
+}
+
+watch(searchQuery, filterPlayers)
+</script>
+<style scoped>
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.player-card {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-name {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.player-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.bg-green-500 {
+  background-color: #10b981;
+}
+
+.data-section {
+  margin-top: 1rem;
+}
+
+.data-card {
+  margin-bottom: 0.5rem;
+}
+
+.header {
+  font-weight: bold;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-md {
+  font-size: 1rem;
+}
+
+button {
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+.add-button {
+  background: #28a745;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-button i {
+  font-size: 1.2rem;
+}
+
+.suggestions-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  margin-top: -1rem;
+}
+
+.suggestion-item {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.obiettivi {
+  margin-top: 2rem;
+}
+
+.obiettivo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e3342f;
+}
+</style>
