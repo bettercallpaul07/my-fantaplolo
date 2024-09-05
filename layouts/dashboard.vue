@@ -1,14 +1,6 @@
 <template>
   <div class="min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 flex flex-col">
-    <div class="flex-1 p-4">
-      <header class="bg-white text-black p-4 shadow-md">
-        <h1 class="text-2xl">Pannello di Controllo</h1>
-      </header>
-      <main class="flex-1 p-4">
-        <NuxtPage />
-      </main>
-    </div>
-    <nav class="bg-gray-800 text-white w-full flex justify-around py-4 fixed bottom-0">
+    <nav class="bg-gray-800 text-white w-full flex justify-around py-4">
       <ul class="flex justify-around w-full">
         <li>
           <nuxt-link to="/" class="flex flex-col items-center">
@@ -36,6 +28,11 @@
         </li>
       </ul>
     </nav>
+    <div class="flex-1 p-4">
+      <main class="flex-1 p-4">
+        <NuxtPage />
+      </main>
+    </div>
   </div>
 </template>
 <style scoped>
