@@ -153,7 +153,6 @@ onMounted(() => {
   loadCSV()
 })
 </script>
-
 <style scoped>
 .container {
   max-width: 100%;
@@ -184,8 +183,6 @@ thead th {
 }
 
 @media (max-width: 1400px) {
-
-
   input {
     font-size: 14px;
   }
@@ -336,6 +333,7 @@ button:hover {
 @media (max-width: 1240px) {
   .player-card {
     padding: 0.5rem;
+    height: auto; /* Aggiunto per ridurre l'altezza */
   }
 
   .player-name {
@@ -373,4 +371,23 @@ button:hover {
   }
 }
 
+@media (max-width: 640px) {
+  .player-card {
+    padding: 0.5rem;
+    height: auto; /* Aggiunto per ridurre l'altezza */
+  }
+
+  .player-name {
+    font-size: 0.75rem; /* text-sm */
+  }
+
+  .player-details, .badge, .header, .text-sm {
+    font-size: 0.625rem; /* text-xs */
+  }
+
+  .add-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem; /* text-xs */
+  }
+}
 </style>

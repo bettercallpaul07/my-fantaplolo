@@ -1,7 +1,15 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 flex">
-    <nav class="bg-gray-800 text-white w-16 flex flex-col items-center py-4">
-      <ul class="space-y-4">
+  <div class="min-h-screen bg-gradient-to-r from-blue-500 to-purple-500 flex flex-col">
+    <div class="flex-1 p-4">
+      <header class="bg-white text-black p-4 shadow-md">
+        <h1 class="text-2xl">Pannello di Controllo</h1>
+      </header>
+      <main class="flex-1 p-4">
+        <NuxtPage />
+      </main>
+    </div>
+    <nav class="bg-gray-800 text-white w-full flex justify-around py-4 fixed bottom-0">
+      <ul class="flex justify-around w-full">
         <li>
           <nuxt-link to="/" class="flex flex-col items-center">
             <font-awesome-icon icon="home" size="2x" />
@@ -28,25 +36,75 @@
         </li>
       </ul>
     </nav>
-    <div class="flex-1 p-4">
-      <header class="bg-white text-black p-4 shadow-md">
-        <h1 class="text-2xl">Pannello di Controllo</h1>
-      </header>
-      <main class="flex-1 p-4">
-        <NuxtPage />
-      </main>
-    </div>
   </div>
 </template>
-
 <style scoped>
-nav ul {
-  list-style: none;
-  padding: 0;
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-nav li {
+html, body, #__nuxt, .flex-col {
+  height: 100%;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.bottom-0 {
+  bottom: 0;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.bg-gray-800 {
+  background-color: #2d3748;
+}
+
+.text-white {
+  color: #fff;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.flex {
   display: flex;
-  justify-content: center;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.text-xs {
+  font-size: 0.75rem;
 }
 </style>
