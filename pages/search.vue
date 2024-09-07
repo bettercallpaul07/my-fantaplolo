@@ -61,6 +61,7 @@
             <font-awesome-icon icon="plus" class="mr-2" /> Aggiungi
           </button>
         </div>
+        
       </div>
     </div>
   </div>

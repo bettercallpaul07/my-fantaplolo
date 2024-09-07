@@ -31,6 +31,13 @@
           <button @click="addPlayer(selectedPlayer)" class="add-button mt-2">
             <font-awesome-icon icon="plus" /> Aggiungi
           </button>
+          <button @click="getSuggestions" class="btn-ia mt-2 bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition duration-300">
+            <font-awesome-icon icon="robot" /> IA
+          </button>
+          <div v-if="aiResponse" class="ai-response mt-4 p-4 bg-gray-100 border border-gray-300 rounded shadow">
+            <h3 class="text-lg font-semibold mb-2">Risposta dell'AI:</h3>
+            <p class="text-gray-700">{{ aiResponse }}</p>
+        </div>
         </div>
       </div>
     </div>
@@ -68,11 +75,64 @@ const filteredData = ref([])
 const selectedPlayer = ref(null)
 const note = ref('')
 const obiettivi = ref([])
+const aiResponse = ref('');
+
+const selectPlayer = (player) => {
+  selectedPlayer.value = player
+  searchQuery.value = ''
+  filteredData.value = []
+}
 
 onMounted(() => {
   loadCSV()
   fetchObiettivi()
 })
+
+const getSuggestions = async () => {
+  if (!selectedPlayer.value) {
+    alert("Seleziona un giocatore prima di cliccare su IA.");
+    return;
+  }
+
+  const playerName = selectedPlayer.value[0];
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        { role: 'system', content: 'Sei un assistente che fornisce suggerimenti su un asta (con 10 concorrenti) del fantacalcio mantra da 500 crediti. I giocatori in totale sono 28; 25 di movimento e 3 portieri.' },
+        { role: 'user', content: `Suggerisci se ${playerName} è da acquistare e indicativamente a che cifra` }
+      ],
+      max_tokens: 100
+    })
+  });
+
+  if (response.status === 429) {
+    alert("Hai superato il limite di richieste. Attendi un momento prima di riprovare.");
+    return;
+  }
+
+  if (response.status === 402) {
+    alert("Hai superato la tua quota attuale. Verifica il tuo piano e i dettagli di fatturazione.");
+    return;
+  }
+
+  if (response.ok) {
+    const data = await response.json();
+    console.log('Risposta API:', data); // Log di debug
+    if (data.choices && data.choices.length > 0) {
+      aiResponse.value = data.choices[0].message.content;
+    } else {
+      alert("Nessuna risposta trovata per il giocatore selezionato.");
+    }
+  } else {
+    alert("Errore nella richiesta: " + response.statusText);
+  }
+};
 
 const loadCSV = () => {
   const filePath = './csv/Quot.csv' // Modifica il percorso del file CSV
@@ -100,11 +160,7 @@ const filterPlayers = () => {
   )
 }
 
-const selectPlayer = (player) => {
-  selectedPlayer.value = player
-  searchQuery.value = ''
-  filteredData.value = []
-}
+
 
 const fetchObiettivi = async () => {
   const { data, error } = await supabase
