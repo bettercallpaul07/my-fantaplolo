@@ -75,7 +75,7 @@ import Swal from 'sweetalert2'
 
 import { supabase } from '~/src/supabase'
 
-const roles = ['Pc', 'A', 'W', 'T', 'C', 'M', 'Dc', 'Dd', 'Ds', 'B', 'Por']
+const roles = ['Pc', 'A', 'T;A', 'W', 'W;T', 'T', 'C;T', 'C', 'M', 'M;C', 'Dc', 'Dd', 'Ds', 'Dd;Ds', 'B', 'Por']
 const selectedRole = ref('')
 
 

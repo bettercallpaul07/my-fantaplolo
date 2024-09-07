@@ -38,6 +38,7 @@
       <div class="flex items-center mb-4">
         <input v-model="searchQuery" @input="searchPlayer" type="text" placeholder="Cerca giocatore" class="input-search p-2 border rounded-lg flex-1 mr-2" />
       </div>
+
       <div v-if="searchResults.length" class="search-results mb-4">
         <div class="flex justify-between items-center mb-2">
           <h3 class="text-xl font-bold">Risultati della ricerca</h3>
@@ -51,6 +52,24 @@
         </ul>
       </div>
     </div>
+
+
+    <div class="quick-links mt-8">
+        <h2 class="text-2xl font-bold mb-4">Link rapidi</h2>
+
+        <ul>
+          <li class="mb-4">
+            <a href="https://content.fantacalcio.it/web/img/medium/543b023e-cdde-4e5e-8d9d-b8e02b86d216.jpg"  target="_blank" class="btn-open bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-lg">Moduli Mantra</a>
+          </li>
+          <li class="mb-4">
+            <a href="https://content.fantacalcio.it/web/img/medium/64bc672b-f62b-4c8f-9363-a7993ee5758b.jpg" target="_blank" class="btn-open bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-lg">Griglia Portieri</a>
+          </li>
+          <li class="mb-4">
+            <a href="https://www.fantacalcio.it/probabili-formazioni-serie-a"  target="_blank" class="btn-open bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-lg">Probabili formazioni</a>
+          </li>
+        </ul>
+
+      </div>
 
     <div class="recent-players-container mt-8">
       <h2 class="text-2xl font-bold mb-4">Acquisti recenti</h2>
@@ -88,6 +107,7 @@ import { supabase } from '~/src/supabase'
 
   const searchQuery = ref('')
   const searchResults = ref([])
+
 
   watch(searchQuery, async (newQuery) => {
   if (newQuery.length >= 2) {
