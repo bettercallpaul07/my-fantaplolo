@@ -6,6 +6,21 @@
       placeholder="Cerca giocatore o squadra..."
       class="w-full p-2 mb-4 border rounded"
     />
+
+    <!-- Nuvolette per la ricerca per ruolo -->
+    <div class="role-filters flex flex-wrap gap-2 mb-4">
+      <span
+        v-for="role in roles"
+        :key="role"
+        @click="filterByRole(role)"
+        :class="{'selected-role': selectedRole === role, 'role-badge': true}"
+      >
+        {{ role }}
+      </span>
+    </div>
+
+
+
     <div v-if="filteredData.length === 1" class="single-result">
       <div class="player-card bg-white shadow-md rounded-lg p-4 mb-4">
         <div class="player-info">
@@ -56,12 +71,12 @@ import { ref, onMounted, computed } from 'vue'
 import Papa from 'papaparse'
 import { useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
 import { supabase } from '~/src/supabase'
 
-library.add(faPlus)
+const roles = ['Pc', 'A', 'W', 'T', 'C', 'M', 'Dc', 'Dd', 'Ds', 'B', 'Por']
+const selectedRole = ref('')
+
 
 definePageMeta({
   layout: 'dashboard'
@@ -87,14 +102,25 @@ const loadCSV = () => {
 }
 
 const filteredData = computed(() => {
-  if (searchQuery.value.length < 1) return []
-  return csvData.value.filter(row => {
-    if (searchQuery.value.length === 1) {
-      return row.some(cell => cell.toString().toLowerCase().includes(searchQuery.value.toLowerCase()) && cell.toString().toLowerCase() !== 'np')
-    }
-    return row.some(cell => cell.toString().toLowerCase().includes(searchQuery.value.toLowerCase()))
-  })
+  let data = csvData.value
+
+  if (searchQuery.value) {
+    data = data.filter(player =>
+      player[0].toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      player[1].toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
+  }
+
+  if (selectedRole.value) {
+    data = data.filter(player => player[4].toLowerCase().includes(selectedRole.value.toLowerCase()))
+  }
+
+  return data
 })
+
+function filterByRole(role) {
+  selectedRole.value = role
+}
 
 const router = useRouter()
 
@@ -153,232 +179,111 @@ onMounted(() => {
   loadCSV()
 })
 </script>
-
 <style scoped>
-.container {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.table-responsive {
-  display: block;
-  width: 100%;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  text-align: left;
-  padding: 8px;
-}
-
-thead th {
-  position: sticky;
-  top: 0;
-  background: white;
-  z-index: 1;
-}
-
-@media (max-width: 1400px) {
-
-
-  input {
-    font-size: 14px;
-  }
-
-  button {
-    font-size: 14px;
-    padding: 6px 12px;
-  }
-
-  .player-row {
-    margin-bottom: 2rem; /* Aggiunge uno spazio vuoto tra i giocatori */
-    border-bottom: 2px solid #ddd; /* Rende più evidente lo stacco tra i giocatori */
-  }
-}
-
-.single-result {
+.role-filters {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.player-card {
-  background-color: white;
-  padding: 2rem; /* Aumentato il padding */
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-bottom: 1rem;
-  width: 100%;
-  max-width: 800px; /* Aumentato il max-width */
-}
-
-.player-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1.5rem; /* Aumentato il margin-bottom */
-}
-
-.player-name {
-  font-weight: bold;
-  font-size: 2rem; /* Aumentato il font-size */
-}
-
-.player-details {
-  font-size: 1.5rem; /* Aumentato il font-size */
-  color: #555;
-  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-.badge {
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+.role-badge {
+  background-color: #10b981; /* bg-green-500 */
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
   font-size: 0.875rem; /* text-sm */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.bg-blue-500 {
-  background-color: #3b82f6;
+.role-badge:hover {
+  background-color: #059669; /* bg-green-700 */
 }
 
-.bg-green-500 {
-  background-color: #10b981;
+.selected-role {
+  background-color: #065f46; /* bg-green-900 */
 }
 
-.player-other-details {
+.input-search {
+  width: 100%;
+  max-width: 300px;
+}
+
+.btn-search, .btn-add {
+  transition: transform 0.2s ease;
+}
+
+.btn-search:hover, .btn-add:hover {
+  transform: scale(1.05);
+}
+
+.team-badge, .role-badge {
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.recent-players-container {
+  margin-top: 2rem;
+}
+
+.recent-players-container h2 {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.recent-players-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
 }
 
 .data-section {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  width: 100%;
 }
 
 .data-card {
   background-color: #f9f9f9;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  flex: 1 1 calc(33.333% - 1rem); /* Card quadrate e compatte */
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
+  flex: 1 1 calc(33.333% - 1rem); /* Aggiunto per visualizzare 3 data-card per riga */
 }
 
-.data-card .header {
+.player-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-name {
   font-weight: bold;
-  margin-bottom: 0.5rem;
-  background-color: #f0f4f8;
+  font-size: 1rem; /* text-lg */
+}
+
+.player-details {
+  font-size: 0.875rem; /* text-sm */
 }
 
 .player-cost {
-  width: 60px; /* Aumentato il width */
-  height: 60px; /* Aumentato il height */
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 1rem; /* text-lg */
   font-weight: bold;
-  font-size: 1.5rem; /* Aumentato il font-size */
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
 }
 
-button {
-  transition: transform 0.2s;
-}
-
-button:hover {
-  transform: scale(1.1);
-}
-
-.add-button {
-  background: #28a745;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  color: white;
-  padding: 0.25rem 0.5rem;
-  position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
-
-}
-
-.add-button i {
-  font-size: 1.2rem;
-}
-
-/* Stili per rendere le schede più piccole sui dispositivi mobili */
-@media (max-width: 1240px) {
-  .player-card {
-    padding: 0.5rem;
-  }
-
-  .player-name {
-    font-size: 1rem;
-  }
-
-  .badge {
-    font-size: 0.75rem; /* text-xs */
-    padding: 0.1rem 0.25rem;
-  }
-
-  .data-section {
-    margin-top: 0.5rem;
-  }
-
+@media (max-width: 767px) {
   .data-card {
-    margin-bottom: 0.25rem;
-  }
-
-  .header {
-    font-size: 0.75rem; /* text-xs */
-  }
-
-  .text-sm {
-  font-size: 0.775rem; /* Aumentata la dimensione del font */
-  color: #ffffff; /* Cambiato il colore del testo */
-  background-color: #4a5568; /* Aggiunto uno sfondo */
-  padding: 0.5rem; /* Aggiunto padding per migliorare la leggibilità */
-  border-radius: 0.25rem; /* Aggiunto bordi arrotondati */
-}
-
-  .add-button {
-    font-size: 0.50rem; /* text-sm */
-    padding: 0.25rem 0.5rem;
-  }
-
-  .add-button i {
-    font-size: 1rem;
+    flex: 1 1 calc(50% - 1rem); /* 2 card per riga nella versione mobile */
   }
 }
 
+@media (min-width: 768px) {
+  .data-card {
+    flex: 1 1 calc(33.333% - 1rem); /* 3 card per riga nella versione desktop */
+  }
+}
 </style>

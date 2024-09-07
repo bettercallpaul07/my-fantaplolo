@@ -183,7 +183,7 @@ const updateCounts = (players) => {
     return player.role === 'Por'
   }).length 
   giocatoriDiRuolo.value = 25 - players.filter(player => player.role !== 'Por').length
-  oneShotValue.value = fantamilioniDisponibili.value - giocatoriDisponibili.value
+  oneShotValue.value = fantamilioniDisponibili.value - giocatoriDisponibili.value + 1
 }
 </script>
 
