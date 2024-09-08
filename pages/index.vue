@@ -97,8 +97,8 @@ import { supabase } from '~/src/supabase'
 
 
   const oneShotValue = ref(0)
-  const fantamilioniDisponibili = ref(500)
-  const fmlIniziali = ref(500)
+  const fantamilioniDisponibili = ref(1000)
+  const fmlIniziali = ref(1000)
   const giocatoriDisponibili = ref(28)
   const giocatoriDiRuolo = ref(25)
   const portieri = ref(3)
